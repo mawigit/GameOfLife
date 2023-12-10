@@ -7,12 +7,6 @@
 #include <string>
 #include <vector>
 #include <sstream>
-/*
-• Rule 1: Any dead cell with exactly three living neighbours becomes a live cell
-• Rule 2: Any live cell with two or three living neighbours stay alive
-• Rule 3: Any live cell with fewer than two living neighbours dies
-• Rule 4: Any live cell with more than three living neighbours dies
-*/
 
 #define LOG(x) std::cout << x << std::endl
 
@@ -116,7 +110,7 @@ int getRightNeighbour(int currentIndex)
 
 int getLeftNeighbour(int currentIndex)
 {
-    if (currentIndex - 1 < ((getRow(currentIndex) * cols) - cols))
+    if (currentIndex - 1 < (getRow(currentIndex) * cols))
     {
         return currentIndex + (cols - 1);
     }
@@ -228,17 +222,16 @@ int main()
     
     // Computation code here
     
-
-    getNeighbours(1);
-
-    /*
-    for (int i = 0; i < size; i++)
+    for (int gen = 0; gen < 1; gen++)
     {
-        getNeighbours(i);
-         int aliveCount = getLivingNeighbours();
-        setCurrentStatus(i, aliveCount);
+        LOG(gen);
+        for (int i = 0; i < size; i++)
+        {
+            getNeighbours(i);
+            int aliveCount = getLivingNeighbours();
+            setCurrentStatus(i, aliveCount);
+        }
     }
-    */
   
     
     
