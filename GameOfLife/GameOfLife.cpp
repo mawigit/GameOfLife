@@ -10,7 +10,8 @@
 
 #define LOG(x) std::cout << x << std::endl
 
-const int size = 225;
+const int generations = 250;
+const int size = 250000;
 std::string firstLine;
 std::string remainingLines;
 bool deadOrAlive[size];
@@ -209,7 +210,7 @@ int main()
     timing->startSetup();
     // Setup code here
 
-    readFile("step1000_in_250generations/debug.gol");
+    readFile("step1000_in_250generations/random250_in.gol");
     setColsRows();
 
 
@@ -222,7 +223,7 @@ int main()
     
     // Computation code here
     
-    for (int gen = 0; gen < 1; gen++)
+    for (int gen = 0; gen < generations; gen++)
     {
         for (int i = 0; i < size; i++)
         {
