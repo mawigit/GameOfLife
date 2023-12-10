@@ -14,6 +14,7 @@
 std::string firstLine;
 std::string remainingLines;
 std::vector<bool> deadOrAlive;
+std::vector<bool> nextGen;
 int cols;
 int rows;
 int size;
@@ -183,21 +184,26 @@ void setCurrentStatus(int currentIndex, int aliveCount)
     //• Rule 1: Any dead cell with exactly three living neighbours becomes a live cell
     if (deadOrAlive[currentIndex] == false && aliveCount == 3)
     {
-        deadOrAlive[currentIndex] = true;
+        nextGen.push_back(true);
     }
     //• Rule 2: Any live cell with two or three living neighbours stay alive
-    if (deadOrAlive[currentIndex] == true && (aliveCount == 2 || aliveCount == 3))
+    else if (deadOrAlive[currentIndex] == true && (aliveCount == 2 || aliveCount == 3))
     {
+        nextGen.push_back(true);
     }
     //• Rule 3: Any live cell with fewer than two living neighbours dies
-    if (deadOrAlive[currentIndex] == true && aliveCount < 2)
+    else if (deadOrAlive[currentIndex] == true && aliveCount < 2)
     {
-        deadOrAlive[currentIndex] = false;
+        nextGen.push_back(false);
     }
     //• Rule 4: Any live cell with more than three living neighbours dies
-    if (deadOrAlive[currentIndex] == true && aliveCount > 3)
+    else if (deadOrAlive[currentIndex] == true && aliveCount > 3)
     {
-        deadOrAlive[currentIndex] = false;
+        nextGen.push_back(false);
+    }
+    else
+    {
+        nextGen.push_back(false);
     }
 }
 
@@ -208,7 +214,7 @@ int main()
     timing->startSetup();
     // Setup code here
 
-    readFile("step1000_in_250generations/debug.gol");
+    readFile("step1000_in_250generations/random250_in.gol");
     setColsRowsSize();
 
 
@@ -222,7 +228,7 @@ int main()
     
     // Computation code here
     
-    for (int gen = 0; gen < 1; gen++)
+    for (int gen = 0; gen < 250; gen++)
     {
         LOG(gen);
         for (int i = 0; i < size; i++)
@@ -231,6 +237,8 @@ int main()
             int aliveCount = getLivingNeighbours();
             setCurrentStatus(i, aliveCount);
         }
+        deadOrAlive = nextGen;
+        nextGen.clear();
     }
   
     
@@ -252,7 +260,7 @@ int main()
     }
 
     // Iterate over the array and print each element to the file
-    
+   
     for (int i = 0; i < size; ++i)
     {
         if (deadOrAlive[i] == true)
@@ -275,6 +283,7 @@ int main()
 
     // Close the file
     outputFile.close();
+
     
     timing->stopFinalization();
 
