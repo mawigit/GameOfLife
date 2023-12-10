@@ -10,15 +10,15 @@
 
 #define LOG(x) std::cout << x << std::endl
 
-
+const int size = 225;
 std::string firstLine;
 std::string remainingLines;
-std::vector<bool> deadOrAlive;
-std::vector<bool> nextGen;
+bool deadOrAlive[size];
+bool nextGen[size];
 int cols;
 int rows;
-int size;
 int neighbours[8];
+int currentRow;
 
 void readFile(std::string filePath)
 {
@@ -46,24 +46,25 @@ void readFile(std::string filePath)
         remainingLines += line;
     }
 
-
+    int i = 0;
     for (char c : remainingLines)
     {
         if (c == (char)'x')
         {
-            deadOrAlive.push_back(true);
+            deadOrAlive[i] = true;
         }
         else if (c == (char)'.')
         {
-            deadOrAlive.push_back(false);
+            deadOrAlive[i] = false;
         }
+        i++;
     }
 
     // Close the file when done
     inputFile.close();
 }
 
-void setColsRowsSize()
+void setColsRows()
 {
     std::istringstream iss(firstLine);
 
@@ -72,12 +73,6 @@ void setColsRowsSize()
     {
         std::cerr << "Error reading numbers." << std::endl;
     }
-    size = cols * rows;
-
-    // Output the values
-    std::cout << "Columns: " << cols << std::endl;
-    std::cout << "Rows: " << rows << std::endl;
-
 }
 
 int getRow(int index)
@@ -99,7 +94,7 @@ int getTopNeighbour(int currentIndex)
 
 int getRightNeighbour(int currentIndex)
 {
-    if (currentIndex + 1 > ((getRow(currentIndex) + 1) * cols - 1))
+    if (currentIndex + 1 > (getRow(currentIndex) + 1) * cols - 1)
     {
         return currentIndex - (cols - 1);
     }
@@ -184,26 +179,26 @@ void setCurrentStatus(int currentIndex, int aliveCount)
     //• Rule 1: Any dead cell with exactly three living neighbours becomes a live cell
     if (deadOrAlive[currentIndex] == false && aliveCount == 3)
     {
-        nextGen.push_back(true);
+        nextGen[currentIndex] = true;
     }
     //• Rule 2: Any live cell with two or three living neighbours stay alive
     else if (deadOrAlive[currentIndex] == true && (aliveCount == 2 || aliveCount == 3))
     {
-        nextGen.push_back(true);
+        nextGen[currentIndex] = true;
     }
     //• Rule 3: Any live cell with fewer than two living neighbours dies
     else if (deadOrAlive[currentIndex] == true && aliveCount < 2)
     {
-        nextGen.push_back(false);
+        nextGen[currentIndex] = false;
     }
     //• Rule 4: Any live cell with more than three living neighbours dies
     else if (deadOrAlive[currentIndex] == true && aliveCount > 3)
     {
-        nextGen.push_back(false);
+        nextGen[currentIndex] = false;
     }
     else
     {
-        nextGen.push_back(false);
+        nextGen[currentIndex] = false;
     }
 }
 
@@ -214,8 +209,8 @@ int main()
     timing->startSetup();
     // Setup code here
 
-    readFile("step1000_in_250generations/random250_in.gol");
-    setColsRowsSize();
+    readFile("step1000_in_250generations/debug.gol");
+    setColsRows();
 
 
 
@@ -224,21 +219,21 @@ int main()
 
     timing->startComputation();
     
-    ;
     
     // Computation code here
     
-    for (int gen = 0; gen < 250; gen++)
+    for (int gen = 0; gen < 1; gen++)
     {
-        LOG(gen);
         for (int i = 0; i < size; i++)
         {
             getNeighbours(i);
             int aliveCount = getLivingNeighbours();
             setCurrentStatus(i, aliveCount);
         }
-        deadOrAlive = nextGen;
-        nextGen.clear();
+        for (int i = 0; i < size; i++)
+        {
+            deadOrAlive[i] = nextGen[i];
+        }
     }
   
     
