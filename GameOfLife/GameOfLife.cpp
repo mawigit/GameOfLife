@@ -165,13 +165,10 @@ int getLivingNeighbours()
 {
     int aliveCount = 0;
 
-    // Assuming neighbours is an array or container
     for (int i : neighbours)
     {
-        // Assuming deadOrAlive is a boolean array
         aliveCount += deadOrAlive[i];
     }
-
     return aliveCount;
 }
 
