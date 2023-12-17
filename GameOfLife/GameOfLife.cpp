@@ -1,6 +1,3 @@
-// GameOfLife.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
 #include "Timing.h"
 #include <fstream>
@@ -15,21 +12,17 @@ const int size = 250000;
 std::string firstLine;
 std::string remainingLines;
 bool deadOrAlive[size];
-bool nextGen[size];
+int allNeighbours[size];
 int cols;
 int rows;
 int currentRow;
 
 void readFile(std::string filePath)
 {
-    // Read file
-            // Declare an input file stream object
     std::ifstream inputFile;
 
-    // Open the file (replace "filename.txt" with the actual file name)
     inputFile.open(filePath);
 
-    // Check if the file is opened successfully
     if (!inputFile.is_open())
     {
         std::cerr << "Error opening the file.\n";
@@ -60,7 +53,6 @@ void readFile(std::string filePath)
         i++;
     }
 
-    // Close the file when done
     inputFile.close();
 }
 
@@ -164,6 +156,25 @@ int getLivingNeighbours(int currentIndex)
 
     return aliveCount;
 }
+void getAllLivingNeighbours()
+{
+    for (int i = 0; i < size; i++)
+    {
+        int aliveCount = 0;
+
+        aliveCount += deadOrAlive[getTopLeftNeighbour(i)];
+        aliveCount += deadOrAlive[getTopNeighbour(i)];
+        aliveCount += deadOrAlive[getTopRightNeighbour(i)];
+        aliveCount += deadOrAlive[getLeftNeighbour(i)];
+        aliveCount += deadOrAlive[getRightNeighbour(i)];
+        aliveCount += deadOrAlive[getBotLeftNeighbour(i)];
+        aliveCount += deadOrAlive[getBotNeighbour(i)];
+        aliveCount += deadOrAlive[getBotRightNeighbour(i)];
+
+        allNeighbours[i] = aliveCount;
+
+    }
+}
 
 void setCurrentStatus(int currentIndex, int aliveCount)
 {
@@ -172,17 +183,17 @@ void setCurrentStatus(int currentIndex, int aliveCount)
     //• Rule 2: Any live cell with two or three living neighbours stay alive
     if (deadOrAlive[currentIndex] == false && aliveCount == 3 || (deadOrAlive[currentIndex] == true && (aliveCount == 2 || aliveCount == 3)))
     {
-        nextGen[currentIndex] = true;
+        deadOrAlive[currentIndex] = true;
     }
     //• Rule 3: Any live cell with fewer than two living neighbours dies
     //• Rule 4: Any live cell with more than three living neighbours dies
     else if (deadOrAlive[currentIndex] == true && (aliveCount < 2 || aliveCount > 3))
     {
-        nextGen[currentIndex] = false;
+        deadOrAlive[currentIndex] = false;
     }
     else
     {
-        nextGen[currentIndex] = false;
+        deadOrAlive[currentIndex] = false;
     }
 }
 
@@ -201,14 +212,10 @@ int main()
     
     for (int gen = 0; gen < generations; gen++)
     {
+        getAllLivingNeighbours();
         for (int i = 0; i < size; i++)
         {
-            int aliveCount = getLivingNeighbours(i);
-            setCurrentStatus(i, aliveCount);
-        }
-        for (int i = 0; i < size; i++)
-        {
-            deadOrAlive[i] = nextGen[i];
+            setCurrentStatus(i, allNeighbours[i]);
         }
     }
     
